@@ -2,32 +2,44 @@ import React from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Button, Text, TextInput, View, StyleSheet, Image} from 'react-native';
 import {useHistory} from 'react-router-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import Icon from 'react-native-vector-icons/Feather';
+
+import DatePicker from './DatePicker';
+import CurrencyPicker from './CurrencyPicker';
 
 const Form = ({setData}) => {
-  let history = useHistory();
   const {control, handleSubmit} = useForm();
   const onSubmit = (data) => {
     setData(data);
     history.push('./result');
   };
+  let history = useHistory();
 
   return (
-    <View style={styles.body}>
-      <View>
-        <Text style={styles.title}>Order trash</Text>
-      </View>
-      <View style={styles.wish}>
-        <View style={styles.leftSide}>
-          <View style={styles.leftSideUp}>
-            <Text style={styles.text}>What you want?</Text>
+    <KeyboardAwareScrollView
+      keyboardShouldPersistTaps="always"
+      style={styles.keyboard}>
+      <View style={styles.main}>
+        <View>
+          <Text style={styles.mainTitle}>Order trash</Text>
+          <Icon
+            style={styles.chevronLeft}
+            name="chevron-left"
+            size={30}
+            color="#FFF"
+          />
+        </View>
+        <View style={styles.upperSide}>
+          <View styele={styles.leftBlock}>
+            <Text style={styles.wishTitle}>What you want?</Text>
             <Controller
               control={control}
-              render={({onChange, onBlur, value}) => (
+              render={({onChange, wish}) => (
                 <TextInput
-                  style={styles.input}
-                  onBlur={onBlur}
-                  onChangeText={(value) => onChange(value)}
-                  value={value}
+                  style={styles.wishInput}
+                  onChangeText={(wish) => onChange(wish)}
+                  value={wish}
                   placeholder={'Perdej v office'}
                   placeholderTextColor={'#808080'}
                 />
@@ -35,20 +47,17 @@ const Form = ({setData}) => {
               name="Wish"
               defaultValue=""
             />
-          </View>
-          <View style={styles.leftSideDown}>
-            <Text style={styles.text}>Comment</Text>
+            <Text style={styles.commentTitle}>Comment</Text>
             <Controller
               control={control}
-              render={({onChange, onBlur, value}) => (
+              render={({onChange, comment}) => (
                 <TextInput
-                  style={styles.comment}
-                  onBlur={onBlur}
-                  onChangeText={(value) => onChange(value)}
-                  value={value}
-                  placeholder={'Tomorrow I will walk naked down the street'}
+                  style={styles.commentInput}
+                  onChangeText={(comment) => onChange(comment)}
+                  value={comment}
+                  placeholder={'Tomorrow I will walk  \nnaked down the street'}
                   placeholderTextColor={'#808080'}
-                  numberOfLines={2.5}
+                  numberOfLines={3}
                   multiline={true}
                 />
               )}
@@ -56,135 +65,155 @@ const Form = ({setData}) => {
               defaultValue=""
             />
           </View>
+          <View styele={styles.rightBlock}>
+            <Image
+              style={styles.image}
+              source={require('../assets/waver.png')}
+            />
+          </View>
         </View>
-        <View style={styles.rightSide}>
-          <Image style={styles.image} source={require('../assets/waver.png')} />
+        <View style={styles.bottomSide}>
+          <Text style={styles.title}>Hashtags #</Text>
+          <Controller
+            control={control}
+            render={({onChange, hashtag}) => (
+              <TextInput
+                style={styles.hashtagInput}
+                onChangeText={(hashtag) => onChange(hashtag.match(/#\w+/g))}
+                value={hashtag}
+                placeholder={'#office #smell #perdej'}
+                placeholderTextColor={'#808080'}
+              />
+            )}
+            name="Hashtags"
+            defaultValue=""
+          />
+          <Text style={styles.title}>Select date WHEN?</Text>
+          <Controller
+            control={control}
+            render={({onChange}) => <DatePicker onChangeDate={onChange} />}
+            name={'Date'}
+            defaultValue=""
+          />
+          <Text style={styles.title}>How much you pay?</Text>
+          <View style={styles.currencySection}>
+            <Controller
+              control={control}
+              render={({onChange, price}) => (
+                <View>
+                  <TextInput
+                    style={styles.priceInput}
+                    onChangeText={(price) => onChange(price)}
+                    value={price}
+                    placeholder={'150'}
+                    placeholderTextColor={'#808080'}
+                  />
+                </View>
+              )}
+              name="Price"
+              defaultValue=""
+            />
+            <Controller
+              control={control}
+              render={({onChange}) => <CurrencyPicker onChange={onChange} />}
+              name="Currency"
+              defaultValue="dollar"
+            />
+          </View>
+          <View style={styles.button}>
+            <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+          </View>
         </View>
       </View>
-      <View style={styles.downContent}>
-        <Text style={styles.text}>Hashtags #</Text>
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={(value) => onChange(value)}
-              value={value}
-              placeholder={'#office #smell #perdej'}
-              placeholderTextColor={'#808080'}
-            />
-          )}
-          name="Hashtags"
-          defaultValue=""
-        />
-        <Text style={styles.text}>Select date WHEN?</Text>
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={(value) => onChange(value)}
-              value={value}
-              placeholder={'22.10.2020'}
-              placeholderTextColor={'#808080'}
-            />
-          )}
-          name="Date"
-          defaultValue=""
-        />
-        <Text style={styles.text}>How much you pay?</Text>
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={(value) => onChange(value)}
-              value={value}
-              placeholder={'150'}
-              placeholderTextColor={'#808080'}
-            />
-          )}
-          name="Price"
-          defaultValue=""
-        />
-        <View style={styles.button}>
-          <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-        </View>
-      </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  body: {
-    flex: 1,
+  keyboard: {
     backgroundColor: '#000000',
   },
-  text: {
+  main: {flex: 1, paddingHorizontal: 10},
+  mainTitle: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
-    paddingTop: '5%',
-    paddingBottom: '2.5%',
+    textAlign: 'center',
+    paddingTop: 20,
+    paddingBottom: 20,
+  },
+  chevronLeft: {
+    position: 'absolute',
+    paddingVertical: 17,
+    marginLeft: -8,
+  },
+  upperSide: {flex: 1, flexDirection: 'row'},
+  wishTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  wishInput: {
+    width: 225,
+    color: '#FFFFFF',
+    fontSize: 16,
+    height: 40,
+    backgroundColor: '#292929',
+    borderRadius: 5,
+  },
+  commentTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingTop: 30,
+    paddingBottom: 10,
+  },
+  commentInput: {
+    width: 225,
+    height: 70,
+    color: '#FFFFFF',
+    backgroundColor: '#292929',
+    borderRadius: 5,
+    fontSize: 16,
+    paddingTop: 0,
+    paddingBottom: 10,
+  },
+  image: {
+    height: '95%',
+    resizeMode: 'contain',
+    marginTop: 10,
+    marginLeft: -10,
   },
   title: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
-    paddingTop: 5,
-    paddingBottom: 5,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
-  input: {
-    width: '100%',
+  hashtagInput: {
+    color: '#FFFFFF',
+    fontSize: 16,
     height: 40,
+    backgroundColor: '#292929',
+    borderRadius: 5,
+  },
+  priceInput: {
     color: '#FFFFFF',
     fontSize: 16,
-    borderColor: '#292929',
-    borderWidth: 1,
-    borderRadius: 5,
+    height: 40,
+    width: 155,
     backgroundColor: '#292929',
-  },
-  comment: {
-    width: '100%',
-    color: '#FFFFFF',
-    fontSize: 16,
-    borderColor: '#292929',
-    borderWidth: 1,
     borderRadius: 5,
-    backgroundColor: '#292929',
   },
-  image: {
-    height: '100%',
-    width: '100%',
-  },
-  wish: {
-    flex: 0.5,
+  currencySection: {
+    flex: 1,
     flexDirection: 'row',
-    minHeight: '15%',
-  },
-  leftSide: {
-    flex: 0.6,
-    flexDirection: 'column',
-    paddingRight: '3%',
-    justifyContent: 'space-between',
-  },
-  leftSideUp: {
-    paddingTop: 15,
-  },
-  rightSide: {
-    flex: 0.4,
-    flexDirection: 'column',
-    paddingTop: 30,
-  },
-  downContent: {
-    flex: 1.3,
   },
   button: {
-    paddingTop: '10%',
+    paddingTop: 30,
   },
 });
 
